@@ -1,0 +1,17 @@
+
+
+
+// Instantiate the module
+spi instance_name (
+    .clk(clk), 
+    .miso(miso), 
+    .data_in(data_in), 
+    .ready_send(ready_send), 
+    .rst(rst), 
+    .mosi(mosi), 
+    .sclk(sclk), 
+    .ss(ss), 
+    .data_out(data_out)
+    );
+
+
