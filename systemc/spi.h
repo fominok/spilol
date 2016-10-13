@@ -39,15 +39,15 @@ SC_CTOR(quarted_clk): c1("C1"), c2("C2") {
 /* The part of SPI mode 3 that's responsible for receiving. */
 SC_MODULE(spi_rx)
 {
-sc_out<sc_int<8> > data_out;
-sc_in<sc_int<3> > ctr;
+sc_out<sc_uint<8> > data_out;
+sc_in<sc_uint<3> > ctr;
 sc_in<bool> clk, in, rst;
 
 void rx() {
     if (rst) {
         data_out.write(0);
     } else {
-        sc_int<3> data_out_tmp = data_out.read();
+        sc_uint<8> data_out_tmp = data_out.read();
         data_out_tmp[ctr.read()] = in.read();
         data_out.write(data_out_tmp);
     }
@@ -62,8 +62,8 @@ SC_CTOR(spi_rx) {
 /* The part of SPI mode 3 that's responsible for transmission. */
 SC_MODULE(spi_tx)
 {
-sc_in<sc_int<8> > data_in;
-sc_in<sc_int<3> > ctr;
+sc_in<sc_uint<8> > data_in;
+sc_in<sc_uint<3> > ctr;
 sc_in<bool> clk;
 sc_out<bool> out;
 
@@ -81,15 +81,15 @@ SC_CTOR(spi_tx) {
 SC_MODULE(spi_master_loop)
 {
 sc_in<bool> clk, rst, enable;
-sc_in<sc_int<8> > input;
+sc_in<sc_uint<8> > input;
 sc_out<bool> ss, do_tx, do_rx;
-sc_out<sc_int<3> > ctr;
-sc_out<sc_int<8> > cache;
+sc_out<sc_uint<3> > ctr;
+sc_out<sc_uint<8> > cache;
 
 void state() {
     bool enabled = false;
     bool trailing = false;
-    sc_int<3> ctr_temp = 0;
+    int ctr_temp = 0;
     ss.write(true);
 
     while (true) {
@@ -112,13 +112,14 @@ void state() {
                     trailing = true;
                 } else if (enable && !enabled) {
                     ss.write(false);
-                    ctr_temp = 0;
+                    ctr_temp = -1;
                     cache = input;
                     enabled = true;
                 } else if (enabled) {
                     do_tx = true;
+                    ++ctr_temp;
                 }
-                ctr.write(ctr);
+                ctr.write(ctr_temp);
             }
         } else {
             if (enabled) {
@@ -137,8 +138,8 @@ SC_CTOR(spi_master_loop) {
 /* SPI master with mode 3. */
 SC_MODULE(spi_master)
 {
-sc_out<sc_int<8> > data_in;
-sc_out<sc_int<8> > data_out;
+sc_out<sc_uint<8> > data_in;
+sc_out<sc_uint<8> > data_out;
 sc_in<bool> clk, rst, enable, miso;
 sc_out<bool> sclk, ss, mosi;
 
@@ -147,8 +148,8 @@ spi_tx tx;
 quarted_clk qclk;
 spi_master_loop lp;
 
-sc_signal<sc_int<3> > ctr;
-sc_signal<sc_int<8> > cache;
+sc_signal<sc_uint<3> > ctr;
+sc_signal<sc_uint<8> > cache;
 sc_signal<bool> do_tx, do_rx;
 
 SC_CTOR(spi_master):
@@ -173,7 +174,7 @@ SC_CTOR(spi_master):
         rx.in(miso);
         rx.rst(rst);
 
-        tx.data_in(data_in);
+        tx.data_in(cache);
         tx.ctr(ctr);
         tx.clk(do_tx);
         tx.out(mosi);
