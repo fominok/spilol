@@ -12,7 +12,7 @@ void invert() {
 
 SC_CTOR(halved_clk) {
     SC_METHOD(invert);
-    sensitive_pos << clk;
+    sensitive << clk.pos();
 }
 
 };
@@ -55,7 +55,7 @@ void rx() {
 
 SC_CTOR(spi_rx) {
     SC_METHOD(rx);
-    sensitive_pos << clk;
+    sensitive << clk.pos();
 }
 };
 
@@ -73,7 +73,7 @@ void tx() {
 
 SC_CTOR(spi_tx) {
     SC_METHOD(tx);
-    sensitive_pos << clk;
+    sensitive << clk.pos();
 }
 };
 
