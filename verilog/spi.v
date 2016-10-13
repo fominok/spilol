@@ -16,7 +16,7 @@ localparam IDLE = 0;
 localparam EXGE = 1;
 
 reg[7:0] state;
-reg[7:0] counter;
+reg[3:0] counter;
 reg[7:0] data_in_reg;
 reg      clk_tmp = 0;
 
@@ -30,11 +30,10 @@ end
 always @(posedge sclk) begin
 	if (rst) begin
 		state <= IDLE;
-		data_out <= 0; // говно какое-то 
 	end
 	case(state)
 		IDLE: begin
-			mosi <= 'bz;
+			mosi <= 1'b0;
 			ss <= 1;
 			if(ready_send) begin
 				counter <= 8;
@@ -45,7 +44,7 @@ always @(posedge sclk) begin
 		end
 		EXGE: begin
 			if (counter == 0) begin
-				mosi <= 'bz;
+				mosi <= 1'b0;
 				ss <= 1;
 				state <= IDLE;
 			end else begin
@@ -57,8 +56,10 @@ always @(posedge sclk) begin
 end
 
 always @(negedge sclk) begin
-	if (state == EXGE) begin
-		data_out[counter] <= miso; // receive
+    if (rst) begin
+        data_out <= 0;
+    end else if (state == EXGE) begin
+		data_out[counter[2:0]] <= miso; // receive
 	end
 end
 
