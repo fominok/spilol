@@ -2,7 +2,7 @@ GPP_FLAGS=-lsystemc
 
 all: prog
 
-prog: testbench.c spi.h
+prog: testbench.cpp spi.h
 	g++ $(GPP_FLAGS) $< -o $@
 
 clean:
