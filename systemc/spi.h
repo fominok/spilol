@@ -1,42 +1,7 @@
 #include "systemc.h"
+#include "clk.h"
 
-/* A module to halve the frequency of a clock. */
-SC_MODULE(halved_clk)
-{
-sc_in<bool> clk;
-sc_out<bool> hclk;
-
-void invert() {
-    hclk = !hclk;
-}
-
-SC_CTOR(halved_clk) {
-    SC_METHOD(invert);
-    sensitive << clk.pos();
-}
-
-};
-
-/* A module to reduce the frequency of a clock to a quarter of the original. */
-SC_MODULE(quarted_clk)
-{
-sc_in<bool> clk;
-sc_out<bool> qclk;
-
-halved_clk c1, c2; 
-sc_signal<bool> tmp;
-
-SC_CTOR(quarted_clk): c1("C1"), c2("C2") {
-    c1.clk(clk);
-    c1.hclk(tmp);
-
-    c2.clk(tmp);
-    c2.hclk(qclk);
-}
-
-};
-
-/* The part of SPI mode 3 that's responsible for receiving. */
+/* The part of SPI that's responsible for receiving. */
 SC_MODULE(spi_rx)
 {
 sc_out<sc_uint<8> > data_out;
@@ -59,7 +24,7 @@ SC_CTOR(spi_rx) {
 }
 };
 
-/* The part of SPI mode 3 that's responsible for transmission. */
+/* The part of SPI that's responsible for transmission. */
 SC_MODULE(spi_tx)
 {
 sc_in<sc_uint<8> > data_in;
@@ -77,7 +42,7 @@ SC_CTOR(spi_tx) {
 }
 };
 
-/* Main loop thread for SPI master with mode 3. */
+/* Main loop thread for SPI master. */
 SC_MODULE(spi_master_loop)
 {
 sc_in<bool> clk, rst, enable;
@@ -87,8 +52,8 @@ sc_out<sc_uint<3> > ctr;
 sc_out<sc_uint<8> > cache;
 
 void state() {
+    bool done = false;
     bool enabled = false;
-    bool trailing = false;
     int ctr_temp = 0;
     ss.write(true);
 
@@ -101,29 +66,29 @@ void state() {
                 ss.write(true);
                 cache = 0;
                 enabled = false;
-                trailing = false;
+                done = false;
                 ctr_temp = 0;
-            } else {
-                if (trailing) {
-                    trailing = false;
-                    ss.write(true);
-                } else if (enabled && (ctr_temp == 7)) {
-                    do_tx = true;
-                    trailing = true;
-                } else if (enable && !enabled) {
-                    ss.write(false);
-                    ctr_temp = -1;
-                    cache = input;
-                    enabled = true;
-                } else if (enabled) {
-                    do_tx = true;
+            } else if (!done && enabled) {
+                do_tx = true;
+                if (ctr_temp == 7) {
+                    done = true;
+                } else {
                     ++ctr_temp;
+                    ctr.write(ctr_temp);
                 }
-                ctr.write(ctr_temp);
             }
         } else {
-            if (enabled) {
+            if (done) {
+                ss.write(true);
+                done = false;
+                enabled = false;
+            } else if (enabled) {
                 do_rx = true;
+            } else if (enable && !enabled) {
+                ss.write(false);
+                ctr_temp = -1;
+                cache = input;
+                enabled = true;
             }
         }
     }
@@ -135,7 +100,7 @@ SC_CTOR(spi_master_loop) {
 }
 };
 
-/* SPI master with mode 3. */
+/* SPI master. */
 SC_MODULE(spi_master)
 {
 sc_out<sc_uint<8> > data_in;

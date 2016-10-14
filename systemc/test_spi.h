@@ -1,4 +1,5 @@
 #include "systemc.h"
+#include "clk.h"
 
 SC_MODULE(test_slave) {
 sc_out<bool> miso, rst, enable;
@@ -11,12 +12,9 @@ void send() {
     rst.write(true);
     wait();
     rst.write(false);
+    wait();
     data_in.write(0x37);
     enable.write(true);
-    wait();
-    while (ss.read() != true) {
-        wait();
-    }
     wait();
     miso.write(1);
     wait();

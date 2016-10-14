@@ -12,9 +12,13 @@
 int sc_main(int ac, char *av[])
 {
     sc_signal<sc_uint<8> > data_in, data_out;
-    sc_signal<bool> miso, sclk, ss, mosi, rst, enable;
+    sc_signal<bool> miso, sclk, t_sclk, ss, mosi, rst, enable;
 
     sc_clock clk ("ID", 10, SC_NS, 0.5, 10, SC_NS, true);
+
+    quarted_clk qclk ("Quarted_clock");
+    qclk.clk(clk);
+    qclk.qclk(t_sclk);
 
     spi_master spi ("SPI_master");
     spi.data_in(data_in);
@@ -28,7 +32,7 @@ int sc_main(int ac, char *av[])
     spi.mosi(mosi);
 
     test_slave test ("SPI_slave");
-    test.clk(sclk);
+    test.clk(t_sclk);
     test.mosi(mosi);
     test.miso(miso);
     test.ss(ss);
