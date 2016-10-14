@@ -52,8 +52,8 @@ sc_out<sc_uint<3> > ctr;
 sc_out<sc_uint<8> > cache;
 
 void state() {
-    bool done = false;
     bool enabled = false;
+    bool last_tact = false;
     int ctr_temp = 0;
     ss.write(true);
 
@@ -66,27 +66,26 @@ void state() {
                 ss.write(true);
                 cache = 0;
                 enabled = false;
-                done = false;
+                last_tact = false;
                 ctr_temp = 0;
-            } else if (!done && enabled) {
+            } else if (enabled) {
                 do_tx = true;
-                if (ctr_temp == 7) {
-                    done = true;
+                if (ctr_temp == 0) {
+                    ss.write(true);
+                    enabled = false;
                 } else {
-                    ++ctr_temp;
+                    --ctr_temp;
                     ctr.write(ctr_temp);
                 }
             }
         } else {
-            if (done) {
-                ss.write(true);
-                done = false;
-                enabled = false;
+            if (last_tact) {
+                last_tact = false;
             } else if (enabled) {
                 do_rx = true;
             } else if (enable && !enabled) {
                 ss.write(false);
-                ctr_temp = -1;
+                ctr_temp = 8;
                 cache = input;
                 enabled = true;
             }
