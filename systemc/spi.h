@@ -111,19 +111,24 @@ sc_out<bool> sclk, ss, mosi;
 spi_rx rx;
 spi_tx tx;
 quarted_clk qclk;
+opt_clk oclk;
 spi_master_loop lp;
 
 sc_signal<sc_uint<3> > ctr;
 sc_signal<sc_uint<8> > cache;
-sc_signal<bool> do_tx, do_rx;
+sc_signal<bool> do_tx, do_rx, qclk_perm;
 
 SC_CTOR(spi_master):
     rx("RX"), tx("TX"), qclk("QCLK"), lp("LP"),
-    do_tx("do_tx"), do_rx("do_rx") {
+    do_tx("do_tx"), do_rx("do_rx"), oclk("OCLK"), qclk_perm("QCLK_") {
         qclk.clk(clk);
-        qclk.qclk(sclk);
+        qclk.qclk(qclk_perm);
 
-        lp.clk(sclk);
+        oclk.clk(qclk_perm);
+        oclk.n_en(ss);
+        oclk.oclk(sclk);
+
+        lp.clk(qclk_perm);
         lp.rst(rst);
         lp.enable(enable);
         lp.input(data_in);
