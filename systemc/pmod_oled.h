@@ -66,7 +66,8 @@ SC_MODULE(pmod_oled_spi_connector) {
               qclk_tmp = 0;
               in_buffer = 0;
               i = 7;
-              qclk = 1;
+              sclk.write(1);
+              continue;
             }
             mosi.write(in_buffer[i--]);
           }

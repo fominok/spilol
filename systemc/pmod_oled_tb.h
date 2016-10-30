@@ -23,6 +23,14 @@ SC_MODULE (pmod_oled_spi_connector_tb) {
     data_set.write(1);
     wait();
     data_set.write(0);
+    wait();
+    while(!ready.read()) {
+      wait();
+    }
+    data_in.write(0x42);
+    data_set.write(1);
+    wait();
+    data_set.write(0);
     wait(50);
     sc_stop();
   }
