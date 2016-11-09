@@ -3,52 +3,59 @@
 #include "pmod_oled.h"
 
 SC_MODULE(SYSTEM) {
-  pmod_oled_spi_connector_tb *tb0;
-  pmod_oled_spi_connector *con0;
+  pmod_oled_ctrl_tb *tb0;
+  pmod_oled_ctrl *ctrl0;
 
-  sc_signal<bool> rst, data_set, sclk, ss, mosi, ready, miso;
-  sc_signal<sc_uint<8> > data_in;
+  sc_signal<bool> rst, sclk, ss, mosi, miso, hwrite, hsel;
+  sc_signal<sc_uint<32> > hwdata, haddr, hrdata;
 
   sc_clock clk;
 
   sc_trace_file *wf = sc_create_vcd_trace_file("pmod_oled");
 
   SC_CTOR(SYSTEM) : clk("clk", 10, SC_NS) {
-    tb0 = new pmod_oled_spi_connector_tb("tb0");
+    tb0 = new pmod_oled_ctrl_tb("tb0");
     tb0->clk(clk);
-    tb0->sclk(sclk);
     tb0->rst(rst);
-    tb0->data_set(data_set);
-    tb0->data_in(data_in);
+    tb0->hwrite(hwrite);
+    tb0->hrdata(hrdata);
+    tb0->hwdata(hwdata);
+    tb0->haddr(haddr);
+    tb0->sclk(sclk);
     tb0->ss(ss);
     tb0->mosi(mosi);
     tb0->miso(miso);
-    tb0->ready(ready);
+    tb0->hsel(hsel);
 
-    con0 = new pmod_oled_spi_connector("con0");
-    con0->clk(clk);
-    con0->sclk(sclk);
-    con0->rst(rst);
-    con0->data_set(data_set);
-    con0->data_in(data_in);
-    con0->ss(ss);
-    con0->mosi(mosi);
-    con0->miso(miso);
-    con0->ready(ready);
+    ctrl0 = new pmod_oled_ctrl("ctrl0");
+    ctrl0->clk(clk);
+    ctrl0->rst(rst);
+    ctrl0->hwrite(hwrite);
+    ctrl0->hrdata(hrdata);
+    ctrl0->hwdata(hwdata);
+    ctrl0->haddr(haddr);
+    ctrl0->sclk(sclk);
+    ctrl0->ss(ss);
+    ctrl0->mosi(mosi);
+    ctrl0->miso(miso);
+    ctrl0->hsel(hsel);
 
     sc_trace(wf, clk, "clk");
-    sc_trace(wf, sclk, "sclk");
     sc_trace(wf, rst, "rst");
-    sc_trace(wf, data_set, "data_set");
-    sc_trace(wf, data_in, "data_in");
+    sc_trace(wf, hwrite, "hwrite");
+    sc_trace(wf, hrdata, "hrdata");
+    sc_trace(wf, hwdata, "hwdata");
+    sc_trace(wf, haddr, "haddr");
+    sc_trace(wf, sclk, "sclk");
     sc_trace(wf, ss, "ss");
     sc_trace(wf, mosi, "mosi");
-    sc_trace(wf, ready, "ready");
+    sc_trace(wf, miso, "miso");
+    sc_trace(wf, hsel, "hsel");
   }
 
   ~SYSTEM() {
     delete tb0;
-    delete con0;
+    delete ctrl0;
 
     sc_close_vcd_trace_file(wf);
   }
