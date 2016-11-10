@@ -29,11 +29,12 @@ int pmodoled_put_column(struct pmodoled_drv *self, uint8_t x, uint32_t col) {
 }
 
 int pmodoled_power_on(struct pmodoled_drv *self) {
-        return self->write_word(self->data, 0x2000, 1);
+        self->write_word(self->data, 0x2000, 1);
+        flush_cfg(self);
 }
 
 int pmodoled_power_off(struct pmodoled_drv *self) {
-        return self->write_word(self->data, 0x2000, 0);
+        self->write_word(self->data, 0x2000, 0);
 }
 
 int pmodoled_set_inverted(struct pmodoled_drv *self, bool inverted) {
