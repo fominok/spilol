@@ -9,11 +9,17 @@ static int begin(struct amba_3_lite_drv *self, uint32_t addr, bool do_write) {
         return 0;
 }
 
+static int end(struct amba_3_lite_drv *self) {
+        self->wait_posedge(self->data);
+        self->haddr_w_cb(self->data, 0);
+        return 0;
+}
+
 int amba_3_lite_write_word(struct amba_3_lite_drv *self, uint32_t addr,
                 uint32_t write) {
         begin(self, addr, true);
         self->hwdata_w_cb(self->data, write);
-        self->wait_posedge(self->data);
+        end(self);
         return 0;
 }
 
@@ -22,7 +28,7 @@ int amba_3_lite_read_word(struct amba_3_lite_drv *self, uint32_t addr,
         begin(self, addr, false);
         self->wait_posedge(self->data);
         self->hrdata_r_cb(self->data, read);
-        self->wait_posedge(self->data);
+        end(self);
         return 0;
 }
 
