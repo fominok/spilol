@@ -1,6 +1,7 @@
 #include "amba_3_lite_pmodoled_adapter.h"
 
-void amba_3_lite_pmodoled_init(struct amba_3_lite_pmodoled_adapter *self,
+void amba_3_lite_pmodoled_adapter_init(
+                struct amba_3_lite_pmodoled_adapter *self,
                 struct pmodoled_drv *pmodoled,
                 struct amba_3_lite_drv *amba_3_lite,
                 uint8_t child_address) {

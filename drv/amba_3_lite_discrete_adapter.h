@@ -1,3 +1,4 @@
+#pragma once
 #include <stdint.h>
 #include "amba_3_lite.h"
 #include "discrete.h"
@@ -7,7 +8,7 @@ struct amba_3_lite_discrete_adapter {
         uint16_t child_address;
 };
 
-void amba_3_lite_discrete_init(struct amba_3_lite_discrete_adapter *,
+void amba_3_lite_discrete_adapter_init(struct amba_3_lite_discrete_adapter *,
                 struct discrete_drv *, struct amba_3_lite_drv *,
                 uint8_t child_address);
 

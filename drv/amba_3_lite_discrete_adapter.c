@@ -1,6 +1,7 @@
 #include "amba_3_lite_discrete_adapter.h"
 
-void amba_3_lite_discrete_init(struct amba_3_lite_discrete_adapter *self,
+void amba_3_lite_discrete_adapter_init(
+                struct amba_3_lite_discrete_adapter *self,
                 struct discrete_drv *discrete,
                 struct amba_3_lite_drv *amba_3_lite,
                 uint8_t child_address) {
