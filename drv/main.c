@@ -4,18 +4,20 @@
 #include "discrete.h"
 #include "pmodoled.h"
 
+#include "sample.h"
+
 #include <stdio.h>
 
 int haddr_w_cb(void *data, uint32_t addr) {
-        printf("Setting address: %u\n", addr);
+        printf("Setting address: %x\n", addr);
 }
 
 int hwdata_w_cb(void *data, uint32_t value) {
-        printf("Writing value:   %u\n", value);
+        printf("Writing value:   %x\n", value);
 }
 
 int hrdata_r_cb(void *data, uint32_t *value) {
-        *value = 0x1337;
+        *value = 0x0;
         printf("Reading value.\n");
 }
 
@@ -28,11 +30,7 @@ int wait_posedge(void *data) {
 }
 
 int main() {
-        struct discrete_drv discrete;
-        struct pmodoled_drv pmodoled;
         struct amba_3_lite_drv amba_3_lite;
-        struct amba_3_lite_discrete_adapter a3d;
-        struct amba_3_lite_pmodoled_adapter a3p;
 
         amba_3_lite.haddr_w_cb = haddr_w_cb;
         amba_3_lite.hwdata_w_cb = hwdata_w_cb;
@@ -40,8 +38,7 @@ int main() {
         amba_3_lite.hwrite_w_cb = hwrite_w_cb;
         amba_3_lite.wait_posedge = wait_posedge;
 
-        amba_3_lite_discrete_adapter_init(&a3d, &discrete, &amba_3_lite, 0x1);
-        amba_3_lite_pmodoled_adapter_init(&a3p, &pmodoled, &amba_3_lite, 0x2);
+        sample(&amba_3_lite);
 
         return 0;
 }
