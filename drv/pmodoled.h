@@ -12,7 +12,7 @@ struct pmodoled_config {
 void pmodoled_config_init(struct pmodoled_config *config);
 
 struct pmodoled_drv {
-        int (*write_word)(void *, uint32_t addr, uint32_t value);
+        int (*write_word)(void *, uint16_t addr, uint32_t value);
         void *data;
         struct pmodoled_config config;
 };
