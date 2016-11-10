@@ -1,10 +1,12 @@
 #include "systemc.h"
 #include "pmod_oled_tb.h"
 #include "pmod_oled.h"
+#include "pmod_oled_receiver.h"
 
 SC_MODULE(SYSTEM) {
   pmod_oled_ctrl_tb *tb0;
   pmod_oled_ctrl *ctrl0;
+  pmod_oled_receiver *recv0;
 
   sc_signal<bool> rst, sclk, ss, mosi, miso, hwrite, hsel;
   sc_signal<sc_uint<32> > hwdata, haddr, hrdata;
@@ -40,6 +42,13 @@ SC_MODULE(SYSTEM) {
     ctrl0->miso(miso);
     ctrl0->hsel(hsel);
 
+    recv0 = new pmod_oled_receiver("recv0");
+    recv0->sclk(sclk);
+    recv0->ss(ss);
+    recv0->mosi(mosi);
+    recv0->miso(miso);
+
+
     sc_trace(wf, clk, "clk");
     sc_trace(wf, rst, "rst");
     sc_trace(wf, hwrite, "hwrite");
@@ -56,6 +65,7 @@ SC_MODULE(SYSTEM) {
   ~SYSTEM() {
     delete tb0;
     delete ctrl0;
+    delete recv0;
 
     sc_close_vcd_trace_file(wf);
   }
