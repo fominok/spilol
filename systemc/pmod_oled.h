@@ -55,22 +55,23 @@ SC_MODULE(pmod_oled_bus_converter) {
         }
       }
       // Deny transfer
-      else if (hsel.read() && hwrite_s.read() && transfer_on) {
-        // Maybe CPU should ask me first
-        //            |
-        //            V
-      }
+      //else if (hsel.read() && hwrite_s.read() && transfer_on) {
+      //  // Maybe CPU should ask me first
+      //  //            |
+      //  //            V
+      //}
       // Ask controller's business
-      else if (hsel.read() && !hwrite_s.read()) {
-        if (transfer_on) {
-          // Zakhlebnulsya govnom
-          hrdata.write(1);
-        } else {
-          hrdata.write(0);
-        }
-      }
+      //else if (hsel.read() && !hwrite_s.read()) {
+      //  if (transfer_on) {
+      //    // Zakhlebnulsya govnom
+      //    hrdata.write(1);
+      //  } else {
+      //    hrdata.write(0);
+      //  }
+      //}
 
       // Start one byte spi tranfer
+      hrdata.write(transfer_on);
       if (transfer_on) {
         if (ready.read() && bts && !byte_sent) {
           data_in.write(buffer.range(7,0));

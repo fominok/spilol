@@ -20,7 +20,7 @@ SC_MODULE (pmod_oled_ctrl_tb) {
   sc_in<bool> mosi;
   sc_in<bool> ss;
 
-  sc_out<bool> miso;
+  sc_in<bool> miso;
 
   void source() {
     rst.write(1);
