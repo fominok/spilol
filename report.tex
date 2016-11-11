@@ -259,11 +259,11 @@ PmodOLED.
                 \node[block, below of=LEDenaft] (LEDsym)
                         {$\texttt{led\_display}
                         \left(\texttt{chars}_{\frac 1 2 \left(d
-                        \land \mathtt{0x111110}\right)}\right)$};
+                        \land \mathtt{0b111110}\right)}\right)$};
                 \node[block, below of=LEDsym] (LEDbr)
                         {$\texttt{led\_set\_brightness}
                         \left(\frac 1 {2^6} \left(d
-                        \land \mathtt{0x1111000000}\right)\right)$};
+                        \land \mathtt{0b1111000000}\right)\right)$};
                 \node[block, below of=LEDbr] (LEDinv)
                         {$\texttt{led\_invert}\left(d_{10}\right)$};
                 \node[block, below of=LEDinv] (LEDmirror)
