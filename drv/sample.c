@@ -29,7 +29,7 @@ void sample(struct amba_3_lite_drv *amba_3_lite) {
         do {
                 uint16_t switches;
                 discrete_get_switches(&discrete, &switches);
-                if (switches & 1) {
+                if (!(switches & 1)) {
                         if (!is_on)
                                 pmodoled_power_on(&pmodoled);
                         is_on = true;

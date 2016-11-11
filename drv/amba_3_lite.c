@@ -4,14 +4,13 @@ static int begin(struct amba_3_lite_drv *self, uint32_t addr, bool do_write) {
         self->wait_posedge(self->data);
         self->haddr_w_cb(self->data, addr);
         self->hwrite_w_cb(self->data, do_write);
-        self->wait_posedge(self->data);
-        self->hwrite_w_cb(self->data, false);
         return 0;
 }
 
 static int end(struct amba_3_lite_drv *self) {
         self->wait_posedge(self->data);
         self->haddr_w_cb(self->data, 0);
+        self->hwrite_w_cb(self->data, false);
         return 0;
 }
 

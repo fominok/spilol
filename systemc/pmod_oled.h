@@ -45,6 +45,8 @@ SC_MODULE(pmod_oled_bus_converter) {
         // Decoding
         sc_uint<16> reg_addr = haddr_s.read() & 0xFFFF;
         actually_started = false;
+        cout << "REG ADDR: " << reg_addr.to_string(SC_HEX) << endl;
+        cout << "DATA " << hwdata_s.read().to_string(SC_HEX) << endl;
 
         switch(reg_addr) {
         case 0x2000:
@@ -61,6 +63,7 @@ SC_MODULE(pmod_oled_bus_converter) {
           buffer = 0x0081A6 | (hwdata_s.read()[1]) | (hwdata_s.read().range(5,2) << 20);
           bts = 3; // <- iverted, set contrast, contrast multiplied by 4
           transfer_on = true;
+          break;
         }
       }
       // Deny transfer

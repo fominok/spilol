@@ -38,6 +38,9 @@ void cpu::app() {
         amba_3_lite.hwrite_w_cb = hwrite_w_cb;
         amba_3_lite.wait_posedge = wait_posedge;
         amba_3_lite.data = this;
+        while (rst) {
+            wait();
+        }
         sample(&amba_3_lite);
 }
 
