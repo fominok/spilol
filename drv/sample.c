@@ -56,14 +56,11 @@ void sample(struct amba_3_lite_drv *amba_3_lite) {
                                 (switches & 0x3000) >> 6);
                 pmodoled_set_vert_speed_component(&pmodoled,
                                 (switches & 0xC000) >> 8);
+
+                discrete_set_diods(&discrete, switches);
                 if (!switches) {
                         do_exit = true;
                 }
         } while (!do_exit);
         pmodoled_power_off(&pmodoled);
-
-        uint16_t v1;
-        // discrete_get_diods(&discrete, &v1);
-        pmodoled_set_inverted(&pmodoled, 1);
-
 }
