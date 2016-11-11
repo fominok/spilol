@@ -29,6 +29,7 @@ void sample(struct amba_3_lite_drv *amba_3_lite) {
         do {
                 uint16_t switches;
                 discrete_get_switches(&discrete, &switches);
+                printf("Switches are: %x\n", switches);
                 if (!(switches & 1)) {
                         if (!is_on)
                                 pmodoled_power_on(&pmodoled);
@@ -42,9 +43,12 @@ void sample(struct amba_3_lite_drv *amba_3_lite) {
                 uint8_t new_idx = (switches >> 1) & 0x1F;
                 if (is_on && new_idx != letter_idx) {
                         size_t i;
+                        uint16_t s;
                         for (i = 0; i < sizeof(letter[new_idx]); ++i) {
-                                pmodoled_put_column(&pmodoled, i,
-                                                letter[new_idx][i]);
+                            discrete_get_switches(&discrete, &s);
+                            if (s)
+                                printf("-- Switches are: %x\n", s);
+                            pmodoled_put_column(&pmodoled, i, letter[new_idx][i]);
                         }
                         letter_idx = new_idx;
                 }
@@ -58,9 +62,6 @@ void sample(struct amba_3_lite_drv *amba_3_lite) {
                                 (switches & 0xC000) >> 8);
 
                 discrete_set_diods(&discrete, switches);
-                if (!switches) {
-                        do_exit = true;
-                }
         } while (!do_exit);
         pmodoled_power_off(&pmodoled);
 }
