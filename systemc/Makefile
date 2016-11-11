@@ -2,6 +2,9 @@ GPP_FLAGS=-lsystemc
 
 all: prog
 
+../drv/%.o:
+	$(MAKE) -C ../drv $*.o
+
 prog: testbench.cpp test_spi.h spi.h clk.h
 	g++ $(GPP_FLAGS) $< -o $@
 
