@@ -48,10 +48,19 @@ SC_MODULE(pmod_oled_bus_converter) {
 
         switch(reg_addr) {
         case 0x2000:
-          buffer = 0xAE | hwdata_s.read()[0];
-          bts = 1;
+          if (hwdata_s.read()[0]) {
+            buffer = 0xAF0120AE; // <- Turn off, set addr mode, column mode, turn on
+            bts = 4;
+          } else {
+            buffer = 0xAE; // Turn off
+            bts = 1;
+          }
           transfer_on = true;
           break;
+        case 0x2004:
+          buffer = 0x0081A6 | (hwdata_s.read()[1]) | (hwdata_s.read().range(5,2) << 20);
+          bts = 3; // <- iverted, set contrast, contrast multiplied by 4
+          transfer_on = true;
         }
       }
       // Deny transfer
