@@ -41,33 +41,34 @@ always @(posedge clk) begin
         data_in_reg <= 0;
         mosi <= 0;
         sclk_p <= 0;
-    end else if (ctr + 1 == clk_divisor >> 1) begin
+        pos_ctr <= 0;
+        neg_ctr <= 0;
+    end else if (ready_send && !enabled) begin
+        data_in_reg <= data_in;
+        mosi <= data_in[7];
+        pos_ctr <= 7;
+        enabled <= 1;
+        ctr <= 0;
+        done <= 0;
+        sclk_p <= 1;
+    end else if (enabled && ctr + 1 == clk_divisor >> 1) begin
         ctr <= 0;
         if (sclk_p) begin
             sclk_p <= 0; // Negedge
-            if (enabled) begin
-                data_out[pos_ctr] <= miso;
-                if (pos_ctr == 0)
-                    done <= 1;
-                neg_ctr <= pos_ctr - 1;
-            end else done <= 0;
+            data_out[pos_ctr] <= miso;
+            if (pos_ctr == 0)
+                done <= 1;
+            neg_ctr <= pos_ctr - 1;
         end else begin
             sclk_p <= 1; // Posedge
-            if (ready_send && !enabled) begin
-                data_in_reg <= data_in;
-                mosi <= data_in[7];
-                pos_ctr <= 7;
-                enabled <= 1;
-            end else if (enabled) begin
-                if (done) begin
-                    enabled <= 0;
-                end else begin
-                    pos_ctr <= neg_ctr;
-                    mosi <= data_in[neg_ctr];
-                end
+            if (done) begin
+                enabled <= 0;
+            end else begin
+                pos_ctr <= neg_ctr;
+                mosi <= data_in[neg_ctr];
             end
         end
-    end else begin
+    end else if (enabled) begin
         ctr <= ctr + 1;
     end
 end
