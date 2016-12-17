@@ -45,21 +45,21 @@ module test_spi;
 		ready_send = 0;
 		#1;
 		// 37 8'b00110111
-		@(posedge sclk);
+		@(negedge sclk);
 		miso = 0;
-		@(posedge sclk);
+		@(negedge sclk);
 		miso = 0;
-		@(posedge sclk);
+		@(negedge sclk);
 		miso = 1;
-		@(posedge sclk);
+		@(negedge sclk);
 		miso = 1;
-		@(posedge sclk);
+		@(negedge sclk);
 		miso = 0;
-		@(posedge sclk);
+		@(negedge sclk);
 		miso = 1;
-		@(posedge sclk);
+		@(negedge sclk);
 		miso = 1;
-		@(posedge sclk);
+		@(negedge sclk);
 		miso = 1;
 			
 		#500
