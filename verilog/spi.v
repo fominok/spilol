@@ -12,7 +12,7 @@ module spi(
     output ss,                 // Slave select
     output reg[7:0] data_out,  // Принятые данные от раба
     output busy                // Идёт транзакция по SPI
-    );
+);
 
 reg      enabled;
 reg[2:0] pos_ctr;
@@ -51,7 +51,7 @@ always @(posedge clk) begin
             pos_ctr <= neg_ctr;
             mosi <= data_in[neg_ctr];
         end
-     end
+    end
 end
 
 endmodule

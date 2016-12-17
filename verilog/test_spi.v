@@ -2,21 +2,21 @@
 
 module test_spi;
 
-	// Inputs
-	reg clk;
-	reg miso;
-	reg[7:0] data_in;
-	reg ready_send;
-	reg rst;
+// Inputs
+reg clk;
+reg miso;
+reg[7:0] data_in;
+reg ready_send;
+reg rst;
 
-	// Outputs
-	wire mosi;
-	wire sclk;
-	wire ss;
-	wire[7:0] data_out;
+// Outputs
+wire mosi;
+wire sclk;
+wire ss;
+wire[7:0] data_out;
 
-	// Instantiate the Unit Under Test (UUT)
-	spi uut (
+// Instantiate the Unit Under Test (UUT)
+spi uut (
     .clk(clk), 
     .miso(miso), 
     .data_in(data_in), 
@@ -26,53 +26,43 @@ module test_spi;
     .sclk(sclk), 
     .ss(ss), 
     .data_out(data_out)
-    );
+);
 
 
 
-	initial begin
-		// Initialize Inputs
-		clk = 0;
-		miso = 0;
-		rst = 1;
-		// Wait for two clocks for the global reset to finish
-		@(posedge clk);
-		@(posedge clk);
-		
-		rst = 0;
-		data_in = 8'b00010011; // 13
-		ready_send = 1;
-		@(ss == 1);
-		ready_send = 0;
-		#1;
-		// 37 8'b00110111
-		miso = 0;
-		@(negedge sclk);
-		miso = 0;
-		@(negedge sclk);
-		miso = 1;
-		@(negedge sclk);
-		miso = 1;
-		@(negedge sclk);
-		miso = 0;
-		@(negedge sclk);
-		miso = 1;
-		@(negedge sclk);
-		miso = 1;
-		@(negedge sclk);
-		miso = 1;
-			
-		@(posedge clk);
-		@(posedge clk);
-		@(posedge clk);
-		$finish;
-        
-		// Add stimulus here
+initial begin
+    // Initialize Inputs
+    clk = 0;
+    miso = 0;
+    rst = 1;
+    // Wait for two clocks for the global reset to finish
+    @(posedge clk);
+    @(posedge clk);
 
-	end
-	
-	always
-	#5 clk = ! clk;
-      
+    rst = 0;
+    data_in = 8'b00010011; // 13
+    ready_send = 1;
+    @(ss == 1);
+    ready_send = 0;
+    #1;
+    // 37 8'b00110111
+    miso = 0;
+    @(negedge sclk); miso = 0;
+    @(negedge sclk); miso = 1;
+    @(negedge sclk); miso = 1;
+    @(negedge sclk); miso = 0;
+    @(negedge sclk); miso = 1;
+    @(negedge sclk); miso = 1;
+    @(negedge sclk); miso = 1;
+
+    @(posedge clk);
+    @(posedge clk);
+    @(posedge clk);
+    $finish;
+
+end
+
+always #5 clk = ! clk;
+
 endmodule
 
