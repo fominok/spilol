@@ -35,8 +35,9 @@ module test_spi;
 		clk = 0;
 		miso = 0;
 		rst = 1;
-		// Wait 100 ns for global reset to finish
-		#100;
+		// Wait for two clocks for the global reset to finish
+		@(posedge clk);
+		@(posedge clk);
 		
 		rst = 0;
 		data_in = 8'b00010011; // 13
@@ -62,7 +63,9 @@ module test_spi;
 		@(negedge sclk);
 		miso = 1;
 			
-		#500
+		@(posedge clk);
+		@(posedge clk);
+		@(posedge clk);
 		$finish;
         
 		// Add stimulus here
