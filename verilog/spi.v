@@ -24,7 +24,6 @@ reg      enabled;
 reg[2:0] pos_ctr;
 reg[2:0] neg_ctr;
 reg[7:0] data_in_reg;
-reg      done;
 
 reg[7:0] ctr;
 reg      sclk_p;
@@ -47,21 +46,17 @@ always @(posedge clk) begin
         data_in_reg <= data_in;
         mosi <= data_in[7];
         pos_ctr <= 7;
-        enabled <= 1;
         ctr <= 0;
-        done <= 0;
         sclk_p <= 1;
     end else if (enabled && ctr + 1 == clk_divisor >> 1) begin
         ctr <= 0;
         if (sclk_p) begin
             sclk_p <= 0; // Negedge
             data_out[pos_ctr] <= miso;
-            if (pos_ctr == 0)
-                done <= 1;
             neg_ctr <= pos_ctr - 1;
         end else begin
             sclk_p <= 1; // Posedge
-            if (done) begin
+            if (neg_ctr == 7) begin
                 enabled <= 0;
             end else begin
                 pos_ctr <= neg_ctr;
