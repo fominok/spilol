@@ -42,18 +42,26 @@ initial begin
     rst = 0;
     data_in = 8'b00010011; // 13
     ready_send = 1;
-    @(ss == 1);
+    @(ss == 0);
     ready_send = 0;
     #1;
     // 37 8'b00110111
     miso = 0;
-    @(negedge sclk); miso = 0;
-    @(negedge sclk); miso = 1;
-    @(negedge sclk); miso = 1;
-    @(negedge sclk); miso = 0;
-    @(negedge sclk); miso = 1;
-    @(negedge sclk); miso = 1;
-    @(negedge sclk); miso = 1;
+    @(negedge sclk);
+    miso = 0;
+    @(negedge sclk);
+    miso = 1;
+    @(negedge sclk);
+    miso = 1;
+    @(negedge sclk);
+    miso = 0;
+    @(negedge sclk);
+    miso = 1;
+    @(negedge sclk);
+    miso = 1;
+    @(negedge sclk);
+    miso = 1;
+    @(ss == 1);
 
     @(posedge clk);
     @(posedge clk);
