@@ -15,14 +15,10 @@ module spi(
     );
 
 reg      enabled;
-reg[3:0] counter;
 reg[2:0] pos_ctr;
 reg[2:0] neg_ctr;
 reg[7:0] data_in_reg;
-reg      clk_tmp = 0;
 reg      done;
-reg      last_tact;
-reg      sclk_p = 0;
 
 assign ss = !enabled;
 assign sclk = !clk || ss;
