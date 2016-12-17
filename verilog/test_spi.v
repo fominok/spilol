@@ -46,7 +46,6 @@ module test_spi;
 		ready_send = 0;
 		#1;
 		// 37 8'b00110111
-		@(negedge sclk);
 		miso = 0;
 		@(negedge sclk);
 		miso = 0;
