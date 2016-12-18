@@ -4,6 +4,8 @@ drv = \
       amba_3_lite_pmodoled_adapter \
       discrete \
       pmodoled \
+      spi \
+
 
 drivers = $(addsuffix .o, $(drv))
 
