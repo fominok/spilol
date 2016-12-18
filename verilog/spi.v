@@ -41,6 +41,7 @@ always @(posedge clk) begin
         data_in_reg <= data_in;
         mosi        <= data_in[7];
         pos_ctr     <= 7;
+        enabled     <= 1;
         ctr         <= 0;
         sclk_p      <= 1;
     end else if (enabled && ctr + 1 == clk_divisor >> 1) begin
