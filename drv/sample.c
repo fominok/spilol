@@ -6,6 +6,7 @@
 #include "discrete.h"
 #include "pmodoled.h"
 
+#include <stdio.h>
 #include <unistd.h>
 
 void sample(struct amba_3_lite_drv *amba_3_lite) {

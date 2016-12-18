@@ -5,11 +5,12 @@ drv = \
       discrete \
       pmodoled \
       spi \
+      amba_3_lite_spi_adapter \
 
 
 drivers = $(addsuffix .o, $(drv))
 
-CFLAGS = -Wall -Wextra -Wpedantic -Wno-unused-paramter -Wno-return-type
+CFLAGS = -Wall -Wextra -Wpedantic -Wno-unused-parameter -Wno-return-type
 
 %.o: %.c *.h
 	$(CC) $(CFLAGS) -c $< -o $@
