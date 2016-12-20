@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-module test_spi;
+module test_amba;
 
 // Inputs
 reg        clk;
@@ -65,12 +65,21 @@ initial begin
     // Wait for two clocks for the global reset to finish
     @(posedge clk);
     @(posedge clk);
-
     rst        = 0;
+	 
+	 // AHB-Lite Write
+	 
+	 // Address phase
 	 hwrite = 1;
-	 hwdata = 'h00000013;
 	 haddr = 'h00000000;
 	 hsel = 1;
+	 
+	 // Data phase
+	 @(posedge clk);
+	 hwdata = 'h00000013;
+	 hwrite = 0;
+	 
+	 // SPI reads at the same time
 	 @(spi_busy == 1);
 	 miso = 0;
     @(negedge sclk); miso = 0;
@@ -80,12 +89,23 @@ initial begin
     @(negedge sclk); miso = 1;
     @(negedge sclk); miso = 1;
     @(negedge sclk); miso = 1;
-	 hwrite = 0;
+
+	 @(spi_busy == 0);
 	 hsel=0;
-	 #10;
+	 
+	 // AHB-Lite Read
+	 
+	 // Address phase
+	 @(posedge clk);
 	 haddr = 'h00000004;
 	 hsel = 1;
-	 #50;
+	 hwrite = 0;
+	 
+	 // Data phase
+	 @(posedge clk);
+	 @(posedge clk);
+	 @(posedge clk);
+	 /*#50;
 	 hsel = 0;
      @(spi_busy == 0);
 	 miso = 0;
@@ -113,7 +133,7 @@ initial begin
 	 hsel = 0;
    
     @(posedge clk);
-    @(posedge clk);
+    @(posedge clk);*/
     @(posedge clk);
     $finish;
 
