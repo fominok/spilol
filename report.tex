@@ -6,6 +6,21 @@
 \usepackage{listings,a4wide,longtable,amsmath,amsfonts,graphicx,tikz}
 \usepackage{indentfirst,verbatim,pdfpages}
 
+\lstset{
+  basicstyle=\footnotesize,        % the size of the fonts that are used for the
+  breakatwhitespace=false,         % sets if automatic breaks should only happen
+  breaklines=true,                 % sets automatic line breaking
+  frame=single,	                   % adds a frame around the code
+  keepspaces=true,                 % keeps spaces in text, useful for keeping
+  numbers=left,                    % where to put the line-numbers; possible
+  numbersep=5pt,                   % how far the line-numbers are from the code
+  numberstyle=\tiny\color{gray},   % the style that is used for the line-numbers
+  rulecolor=\color{black},         % if not set, the frame-color may be changed
+  showspaces=false,                % show spaces everywhere adding particular
+  showstringspaces=false,          % underline spaces within strings only
+  showtabs=false                   % show tabs within strings adding particular
+}
+
 \usetikzlibrary{shapes,arrows}
 
 \begin{document}
@@ -21,8 +36,8 @@
 \end{center}
 \vspace{\stretch{2}}
 \begin{center}
-                         {\bf Лабораторная работа №2}\\
-          Разработка высокоуровневой модели микропроцессорной системы
+                         {\bf Лабораторная работа №3, этап 1}\\
+          Разработка синтезируемого описания микропроцессорной системы
                                 {\sl 7 вариант}
 \end{center}
 \vspace{\stretch{3}}
@@ -39,71 +54,26 @@
 % ======================== КОНЕЦ ТИТУЛЬНОГО ЛИСТА ============================
 
 % ================================ ОТЧЁТ =====================================
+\pagestyle{plain}
 
 \tableofcontents
 
 \section{Задание}
 
-\subsection{Системная часть}
-
-Требуется написать высокоуровневую модель системы, состоящей из процессора,
-нескольких периферийных устройств и инфраструктуры для их сообщения.
-
-В качестве периферийного устройства, определяемого вариантом, выбран ЖК-экран
-PmodOLED.
-
-Его возможности включают в себя:
-
-\begin{itemize}
-        \item Вывод монохромного изображения на экран разрешением $128 \times
-                32$;
-        \item Настройка яркости;
-        \item Инвертирование изображения;
-        \item Динамическая прокрутка изображения по горизонтали и вертикали.
-\end{itemize}
+Требуется отредактировать проект MIPSFpga таким образом, чтобы он поддерживал
+работу с Pmod OLED посредством шины Amba 3 Lite.
 
 \section{Функциональность системы}
 
-Система должна представлять программному обеспечению следующие возможности по
-управлению дисплеем:
+Нужно, чтобы со стороны процессора было возможно:
 
 \begin{itemize}
-        \item Установка пикселей как по одному, так и пачкой по 32;
-        \item Задание яркости экрана;
-        \item Включение и выключение экрана;
-        \item Конфигурация автоматической прокрутки экрана.
+    \item Отправлять по одному байту команды и данные на Pmod OLED через
+        интерфейс SPI;
+    \item Обращаться к остальным пинам, которые предоставляются устройством.
 \end{itemize}
 
-Также нужно поддерживать такие возможности дополнительной инфраструктуры:
-
-\begin{itemize}
-        \item Считывание состояния переключателей;
-        \item Установка состояния светодиодов.
-\end{itemize}
-
-\subsection{Прикладная часть}
-
-Для демонстрации функциональности системы в неё встроено прикладное ПО, которое
-выполняет такие задачи:
-
-\begin{itemize}
-        \item Диод горит, если соответствующий ему движковый переключатель в
-                верхнем положении;
-        \item Младший движковый переключатель включает и выключает дисплей;
-        \item Пять следующих движковых переключателей определяют символ в
-                диапазоне \texttt{[A-Z].,?!-}, причём состоянию, при котором ни
-                один переключатель не в верхнем положении, соответствует
-                отсутствие символа. Выбранный символ отображается на дисплее;
-        \item Следующие четыре переключателя задают один из 16 уровней яркости
-                дисплея;
-        \item Следующий переключатель задаёт, инвертированное ли изображение
-                поступает на экран;
-        \item Следующие два переключателя задают скорость горизонтальной
-                прокрутки изображения;
-        \item Ещё два переключателя определяют скорость вертикальной прокрутки.
-\end{itemize}
-
-\section{Модель}
+\section{Описание подсистем}
 
 \subsection{Контроллер ввода-вывода SPI}
 
@@ -135,9 +105,14 @@ PmodOLED.
 
 \subsubsection{Функционал}
 
-\paragraph{Установка и считывание состояния дискретных портов вывода} Контроллер дискретного ввода-вывода предоставляет 32 32-битных регистра, которые можно привязать к произвольной периферии и которые поддерживают как ввод, так и вывод. 
+\paragraph{Установка состояний регистров} Доступно 8 16-битных регистров,
+состояние которых возможно изменить путём записи в них. При этом верхняя часть
+отправляемого слова представляет собой маску, которую надо применить при записи:
+значение бита обновляется, если соответствующий ему бит в маске установлен.
 
-\paragraph{Считывание состояния дискретных портов ввода} Также контроллер предоставляет 32 32-битных регистра, доступных только для чтения.
+\paragraph{Считывание состояний регистров} Также доступно дополнительные 8
+16-битных регистров, доступных только для чтения. Таким образом, всего можно
+читать значения 32 регистров.
 
 \subsubsection{Регистровая карта}
 
@@ -145,143 +120,23 @@ PmodOLED.
         \hline
         \bf Адрес & \bf Бит & \bf Описание \\
         \hline
-        \tt 0x0000, 0x0004... 0x007C & \tt [31:0] & Порты вывода \\
+        \tt 0x0000, 0x0004... 0x1C & \tt [15:0] & Данные \\
+                                   & \tt [31:16] & Маска для записи \\
         \hline
-        \tt 0x0080, 0x0084... 0x00FC & \tt [31:0] & Порты ввода (только чтение) \\
+        \tt 0x0020, 0x0024... 0x3C & \tt [15:0] & Данные \\
         \hline
-\end{tabular}
+\end{tabular}        
 
-\subsection{Коммутатор шины}
+\section{Временные диаграммы}
 
-На коммутаторе шины располагаются контроллер периферийного устройства и
-контроллер дискретного ввода-вывода.
+\includegraphics[width=0.95\textwidth]{scrot}
 
-Пока доступны только два ведомых устройства, их адреса определяются двумя
-младшими битами старших двух байтов следующим образом:
+\section{Исходные тексты}
 
-\begin{tabular}{|c|c|l|}
-        \hline
-        $a_{17}$ & $a_{16}$ & Ведомое устроство \\
-        \hline
-        \tt 0 & \tt 1 & Контроллер ввода-вывода периферийного устройства \\
-        \hline
-        \tt 1 & \tt 0 & Контроллер дискретного ввода-вывода \\
-        \hline
-        \tt 0 & \tt 0 & Ничего \\
-        \cline{1-2}
-        \tt 1 & \tt 1 & \\
-        \hline
-\end{tabular}
-
-Для добавления новых устройств требуется:
-
-\begin{enumerate}
-        \item Изменить демультиплексор \texttt{HSEL}, чтобы добавить новый
-                сигнал;
-        \item Добавить ещё одну шину и добавить её в мультиплексор
-                \texttt{HRDATA}.
-\end{enumerate}
-
-\subsection{Периферийное устройство}
-
-ЖК-экран не предоставляет по шине SPI никаких данных, только принимает
-сторонние. Поэтому в качестве периферийного устройства работает отдельная
-программа, которая считывает из сокета данные и демонстрирует текущее состояние
-буфера кадров. Модуль, отвечающий за периферийное устройство, отсылает команды
-в сокет.
-
-\subsection{Программное обеспечение}
-
-Программное обеспечение представлено пользовательской программой и набором
-драйверов.
-
-\begin{description}
-        \item[Драйвер шины] Реализует чтение и запись четырёх байтов по
-                заданному адресу.
-        \item[Драйвер контроллера дискретного ввода-вывода] Позволяет получить
-                состояния диодов и переключателей, а также установить значения
-                как всех диодов, так и одного из них.
-        \item[Драйвер контроллера экрана] Позволяет отослать произвольную
-                битовую карту размерностью не более $128 \times 32$ на дисплей,
-                инвертировать картинку, установить яркость экрана, а также
-                свойства прокрутки.
-        \item[Адаптеры] Адаптеры позволяют обращаться к контроллерам и вызывать
-                их функции, несмотря на то, что они находятся за шиной.
-\end{description}
-
-Программное обеспечение вызывает функции, предоставляемые драйверами, для
-достижения конкретного результата.
-
-\begin{figure}[h!]
-        \centering
-        \tikzstyle{decision} = [draw, diamond, aspect=2]
-        \tikzstyle{block} = [draw, rectangle]
-        \begin{tikzpicture}[node distance=4em, auto]
-
-                \node[draw, ellipse] (begin) {Begin};
-                \node[below of=begin, node distance=2em] (beginst) {};
-                \node[right of=beginst, xshift=16em]
-                        (beginst2) {};
-                \node[block, below of=beginst, node distance=2em] (init0)
-                        {$d \leftarrow \texttt{turn\_get\_state()}$};
-                \node[decision, below of=init0] (LEDen) {$d_0$};
-                \node[block, below of=LEDen, xshift=12em] (LEDdoon)
-                        {\texttt{led\_enable()}};
-                \node[block, below of=LEDen, xshift=-12em] (LEDdooff)
-                        {\texttt{led\_disable()}};
-                \node[below of=LEDen, node distance=8em] (LEDenaft) {};
-                \node[block, below of=LEDenaft] (LEDsym)
-                        {$\texttt{led\_display}
-                        \left(\texttt{chars}_{\frac 1 2 \left(d
-                        \land \mathtt{0b111110}\right)}\right)$};
-                \node[block, below of=LEDsym] (LEDbr)
-                        {$\texttt{led\_set\_brightness}
-                        \left(\frac 1 {2^6} \left(d
-                        \land \mathtt{0b1111000000}\right)\right)$};
-                \node[block, below of=LEDbr] (LEDinv)
-                        {$\texttt{led\_invert}\left(d_{10}\right)$};
-                \node[block, below of=LEDinv] (LEDmirror)
-                        {$\texttt{led\_mirror}\left(d_{11}\right)$};
-                \node[block, below of=LEDmirror] (LEDspeed)
-                        {$\texttt{led\_set\_scroll\_speed}\left(
-                        2 \cdot d_{13} + d_{12}\right)$};
-                \node[block, below of=LEDspeed] (LEDvspeed)
-                        {$\texttt{led\_set\_vert\_speed}\left(
-                        2 \cdot d_{15} + d_{14}\right)$};
-                \node[block, below of=LEDvspeed] (diods)
-                        {$\texttt{diods\_set}\left(d\right)$};
-                \node[below of=diods, node distance=2em] (end) {};
-
-                \draw[->] (begin) -- (init0);
-                \draw[->] (init0) -- (LEDen);
-                \draw[->] (LEDen) -| node[near start]{yes} (LEDdoon);
-                \draw[->] (LEDen) -| node[near start]{no} (LEDdooff);
-                \draw[  ] (LEDdoon) |- (LEDenaft.center);
-                \draw[  ] (LEDdooff) |- (LEDenaft.center);
-                \draw[->] (LEDenaft.center) -- (LEDsym);
-                \draw[->] (LEDsym) -- (LEDbr);
-                \draw[->] (LEDbr) -- (LEDinv);
-                \draw[->] (LEDinv) -- (LEDmirror);
-                \draw[->] (LEDmirror) -- (LEDspeed);
-                \draw[->] (LEDspeed) -- (LEDvspeed);
-                \draw[->] (LEDvspeed) -- (diods);
-                \draw[  ] (diods) -- (end.center);
-                \draw[  ] (end.center) -| (beginst2.center);
-                \draw[->] (beginst2.center) -- (beginst.center);
-
-        \end{tikzpicture}
-        \caption{Блок-схема прикладной программы}
-\end{figure}
-
-\section{Исходные коды}
-
-\subsection{AMBA 3 Lite}
-
-\lstinputlisting[basicstyle=\scriptsize,language=C++]{systemc/amba_3_lite.h}
-
-\subsection{Прикладная программа}
-
-\lstinputlisting[basicstyle=\scriptsize,language=C]{drv/sample.c}
+\lstinputlisting[language=Verilog]{verilog/spi.v}
+\lstinputlisting[language=Verilog]{verilog/spi_amba_connector.v}
+\lstinputlisting[language=Verilog]{verilog/spi_controller.v}
+\lstinputlisting[language=Verilog]{verilog/discrete.v}
 
 % ============================ КОНЕЦ ОТЧЁТА ==================================
 

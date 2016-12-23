@@ -34,13 +34,14 @@ always @(posedge clk) begin
     end else if (spi_ready_send && spi_busy) begin
         spi_ready_send <= 0;
     end else if (!spi_ready_send && !spi_busy) begin
-        if (!phase) begin
-            if (hsel && haddr[15:0] == 'h0000 && hwrite) phase <= 1;
-        end else begin
-            spi_data_in <= spi_data_in_reg;
+          if (!phase) begin
+              if (hsel && haddr[15:0] == 'h0000 && hwrite) phase <= 1;
+          end else begin
+              spi_data_out_reg <= spi_data_in;
+              spi_data_in <= spi_data_in_reg;
               spi_ready_send <= 1;
               phase <= 0;
-        end
+          end
     end
 end
 
