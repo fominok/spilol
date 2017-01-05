@@ -1,9 +1,12 @@
 GPP_FLAGS=-lsystemc
 
-all: prog
+all: main
 
 ../drv/%.o:
 	$(MAKE) -C ../drv $*.o
+
+main: EVM.cpp
+	g++ $(GPP_FLAGS) $^ ../drv/*.o -o $@
 
 prog: testbench.cpp test_spi.h spi.h clk.h
 	g++ $(GPP_FLAGS) $< -o $@
